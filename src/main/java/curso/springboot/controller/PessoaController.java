@@ -26,6 +26,10 @@ public class PessoaController {
 		ModelAndView modelAndView = new ModelAndView("cadastro/cadastropessoa");
 		//passa a lista de objetos vazia para poder carregar a tela de cadastro sem erros
 		modelAndView.addObject("pessoaobj", new Pessoa());
+		//Obtem do banco a lista de pessoas
+		Iterable<Pessoa> PessoasIt = pessoaRepository.findAll();
+		//adiciona na viw a lista de pessoas. Atributo pessoas criado no html
+		modelAndView.addObject("pessoas", PessoasIt);
 		return modelAndView;
 	}
 
@@ -86,13 +90,25 @@ public class PessoaController {
 		andView.addObject("pessoaobj", new Pessoa());
 		return andView;
 	}
-	
+
 	@PostMapping("**/pesquisapessoa")
 	public ModelAndView pesquisar(@RequestParam("nomepesquisa") String nomepesquisa){
 		ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
 		andView.addObject("pessoas", pessoaRepository.findPessoaByName(nomepesquisa.toLowerCase()));
 		andView.addObject("pessoaobj", new Pessoa());
 		return andView;
+	}
+	
+	@GetMapping("/telefones/{idpessoa}")
+	//@PathVariable serve para pegar a variavel que vem na url
+	public ModelAndView telefones (@PathVariable("idpessoa") Long idpessoa){
+		//carrega os dados de Pessoa do banco
+		Optional<Pessoa> pessoa = pessoaRepository.findById(idpessoa);
+		//instanciar o view para injetar os dados na tela
+		ModelAndView modelAndView = new ModelAndView("cadastro/telefones");
+		//adiciona a pessoa obtida ao objeto pessoaobj
+		modelAndView.addObject("pessoaobj", pessoa.get());
+		return modelAndView;
 	}
 
 
