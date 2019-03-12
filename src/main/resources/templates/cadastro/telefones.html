@@ -47,6 +47,21 @@
 		</form>
 	</div>
 	
+	<table class="striped">
+		<thead>
+			<tr>
+				<th>Telefone</th>
+				<th>Tipo</th>
+				<th>Excluir</th>
+			</tr>
+		</thead>
+	  		<tr th:each="fone : ${telefones}">
+	  			<td th:text="${fone.numero}"/>
+	  			<td th:text="${fone.tipo}"/>
+	  			<td><a th:href="@{/excluirtelefone/{idtelefone}(idtelefone=${fone.id})}">Excluir</a> </td>
+			</tr>
+	</table>
+		
 	<!--JavaScript at end of body for optimized loading-->
 	<script type="text/javascript" src="/materialize/js/materialize.min.js"></script>
     <script type="text/javascript" src="/materialize/js/materialize.js"></script>

@@ -2,6 +2,7 @@ package curso.springboot.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,7 +23,7 @@ public class Pessoa implements Serializable{
 	private String nome;
 	private String sobrenome;
 	private int idade;
-	@OneToMany(mappedBy="pessoa")
+	@OneToMany(mappedBy="pessoa",cascade = {CascadeType.ALL},orphanRemoval=true)
 	private List<Telefone> telefones;
 	
 	

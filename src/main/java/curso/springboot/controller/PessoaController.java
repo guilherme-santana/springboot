@@ -95,7 +95,7 @@ public class PessoaController {
 		andView.addObject("pessoaobj", new Pessoa());
 		return andView;
 	}
-
+	//** utilizado para ignorar qualquer coisa que estiver antes de /pesquisapessoa utilizado sempre quando o metodo for POST 
 	@PostMapping("**/pesquisapessoa")
 	public ModelAndView pesquisar(@RequestParam("nomepesquisa") String nomepesquisa){
 		ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
@@ -113,6 +113,7 @@ public class PessoaController {
 		ModelAndView modelAndView = new ModelAndView("cadastro/telefones");
 		//adiciona a pessoa obtida ao objeto pessoaobj
 		modelAndView.addObject("pessoaobj", pessoa.get());
+		modelAndView.addObject("telefones", telefoneRepository.getTelefone(idpessoa));
 		return modelAndView;
 	}
 
@@ -123,9 +124,21 @@ public class PessoaController {
 		telefoneRepository.save(telefone);
 		ModelAndView modelV = new ModelAndView("cadastro/telefones");
 		modelV.addObject("pessoaobj", pessoa);
+		modelV.addObject("telefones", telefoneRepository.getTelefone(pessoaid));
 		return modelV;
 	}
 
+	@GetMapping("/excluirtelefone/{idtelefone}")
+	//@PathVariable serve para pegar a variavel que vem na url
+	public ModelAndView telefoneExcluir (@PathVariable("idtelefone") Long idtelefone){
+		Pessoa pessoa = telefoneRepository.findById(idtelefone).get().getPessoa();
+		telefoneRepository.deleteById(idtelefone);
+		ModelAndView andView = new ModelAndView("cadastro/telefones");
+		andView.addObject("pessoaobj", pessoa);
+		telefoneRepository.getTelefone(pessoa.getId()).clear();
+		andView.addObject("telefones", telefoneRepository.getTelefone(pessoa.getId()));
+		return andView;
+	}
 
 
 }
