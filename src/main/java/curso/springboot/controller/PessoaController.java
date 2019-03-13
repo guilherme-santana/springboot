@@ -160,6 +160,7 @@ public class PessoaController {
 		telefoneRepository.save(telefone);
 		ModelAndView modelV = new ModelAndView("cadastro/telefones");
 		modelV.addObject("pessoaobj", pessoa);
+		modelV.addObject("telobj", new Telefone());
 		modelV.addObject("telefones", telefoneRepository.getTelefone(pessoaid));
 		return modelV;
 	}
@@ -171,7 +172,8 @@ public class PessoaController {
 		telefoneRepository.deleteById(idtelefone);
 		ModelAndView andView = new ModelAndView("cadastro/telefones");
 		andView.addObject("pessoaobj", pessoa);
-		telefoneRepository.getTelefone(pessoa.getId()).clear();
+		andView.addObject("telobj", new Telefone());
+		telefoneRepository.getTelefone(pessoa.getId());
 		andView.addObject("telefones", telefoneRepository.getTelefone(pessoa.getId()));
 		return andView;
 	}
