@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.annotations.ForeignKey;
 
 @SuppressWarnings("deprecation")
@@ -14,7 +17,11 @@ public class Telefone {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@NotNull(message="Campo Número é obrigatório!")
+	@NotEmpty(message="Campo Número é obrigatório!")
 	private String numero;
+	@NotNull(message="Campo Tipo é obrigatório!")
+	@NotEmpty(message="Campo Tipo é obrigatório!")
 	private String tipo;
 	
 	@ForeignKey(name="pessoa_id")

@@ -1,9 +1,15 @@
 package curso.springboot.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +46,21 @@ public class PessoaController {
 
 	//requestMapping intercepta a requisição sempre que a ação "salvarpessoa" for acionada
 	@RequestMapping(method=RequestMethod.POST, value="**/salvarpessoa")
-	public ModelAndView salvar(Pessoa pessoa){
+	public ModelAndView salvar(@Valid Pessoa pessoa, BindingResult bindingResult){
+		
+		if(bindingResult.hasErrors()){
+			ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
+			Iterable<Pessoa> PessoasIt = pessoaRepository.findAll();
+			andView.addObject("pessoas", PessoasIt);
+			andView.addObject("pessoaobj", pessoa);
+			List<String> msg = new ArrayList<String>();
+			for(ObjectError objectError: bindingResult.getAllErrors()){
+				msg.add(objectError.getDefaultMessage()); // vem das anotações @NotEmpty na model
+			}
+			andView.addObject("message", msg);
+			return andView;
+		}
+		
 		//persiste no banco
 		pessoaRepository.save(pessoa);
 		//instanciar o view para injetar os dados na tela
@@ -113,14 +133,30 @@ public class PessoaController {
 		ModelAndView modelAndView = new ModelAndView("cadastro/telefones");
 		//adiciona a pessoa obtida ao objeto pessoaobj
 		modelAndView.addObject("pessoaobj", pessoa.get());
+		modelAndView.addObject("telobj",  new Telefone() );
 		modelAndView.addObject("telefones", telefoneRepository.getTelefone(idpessoa));
 		return modelAndView;
 	}
 
 	@PostMapping("**/addfonepessoa/{pessoaid}")
-	public ModelAndView addFonePessoa(Telefone telefone, @PathVariable("pessoaid") Long pessoaid){
+	public ModelAndView addFonePessoa(@Valid Telefone telefone,BindingResult bindingResult, @PathVariable("pessoaid") Long pessoaid){
 		Pessoa pessoa =  pessoaRepository.findById(pessoaid).get();
 		telefone.setPessoa(pessoa);
+		
+		if(bindingResult.hasErrors()){
+			ModelAndView modelV = new ModelAndView("cadastro/telefones");
+			modelV.addObject("pessoaobj", pessoa);
+			modelV.addObject("telobj", telefone);
+			modelV.addObject("telefones", telefoneRepository.getTelefone(pessoaid));
+			
+			List<String> msg = new ArrayList<String>();
+			for(ObjectError objectError: bindingResult.getAllErrors()){
+				msg.add(objectError.getDefaultMessage()); // vem das anotações @NotEmpty na model
+			}
+			modelV.addObject("message", msg);
+			return modelV;
+		}
+		
 		telefoneRepository.save(telefone);
 		ModelAndView modelV = new ModelAndView("cadastro/telefones");
 		modelV.addObject("pessoaobj", pessoa);
